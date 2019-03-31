@@ -1,0 +1,571 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Salaries Tax Computation</title>
+  <link rel="stylesheet" href="result.css" />
+</head>
+
+<div class="main">
+		  <script>
+		    function taxReduction(tax) {
+		    	reduction = tax * 0.75;
+		    	if (reduction > 20000)
+		    		reduction = 20000;
+		    	return reduction
+		    }
+		  	function compute(income, allowances, mpf) {
+		  		var incomes = [];
+		  		var rates = [];
+		  		incomes[0] = 50000;
+		  		incomes[1] = 50000;
+		  		incomes[2] = 50000;
+		  		incomes[3] = 50000;
+		  		rates[0] = 0.02;
+		  		rates[1] = 0.06;
+		  		rates[2] = 0.10;
+		  		rates[3] = 0.14;
+		  		rates[4] = 0.17;
+
+		  		if (allowances <= income){
+		  			netChargeableIncome = income - allowances - mpf;
+		  		}
+		  		else{
+		  			netChargeableIncome = 0;
+		  		}
+		  		if(netChargeableIncome > incomes[0]){
+		  			netChargeableIncome -= incomes[0];
+		  			if (netChargeableIncome > incomes[1]){
+		  				netChargeableIncome -= incomes[1];
+		  				if (netChargeableIncome > incomes[2]){
+		  					netChargeableIncome -= incomes[2];
+		  					if (netChargeableIncome > incomes[3]){
+		  						netChargeableIncome -= incomes[3];
+		  						tax = netChargeableIncome * rates[4] + incomes[0] * rates[0] + incomes[1] * rates[1] + incomes[2] * rates[2] + incomes[3] * rates[3];
+		  					}
+		  					else
+		  						tax = netChargeableIncome * rates[3] + incomes[0] * rates[0] + incomes[1] * rates[1] + incomes[2] * rates[2];
+		  				}
+		  				else
+		  					tax = netChargeableIncome * rates[2] + incomes[0] * rates[0] + incomes[1] * rates[1];
+		  			}
+		  			else
+		  				tax = netChargeableIncome * rates[1] + incomes[0] * rates[0];
+		  		}
+		  		else
+		  			tax = netChargeableIncome * rates[0];
+
+		  		standardRate = (income - mpf) * 0.15;
+
+		  		if(standardRate < tax)
+		  			return standardRate+' *';
+		  		else
+		  			return tax;
+		  	}
+		  </script>
+
+		  <script>
+		  	function getParameterByName(name, url) {
+		  		if (!url) url = window.location.href;
+		  		name = name.replace(/[\[\]]/g, '\\$&');
+		  		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+		  		results = regex.exec(url);
+		  		if (!results) return null;
+		  		if (!results[2]) return '';
+		  			return decodeURIComponent(results[2].replace(/\+/g, ' '));
+		  		}
+
+		  		var selfIncome = getParameterByName('self_income');
+		  		var spouseIncome = getParameterByName('spouse_income');
+		  		if (selfIncome <= 85200){
+		  			var selfMPF = 0;
+		  		}
+		  		else if (selfIncome >= 360000){
+		  			var selfMPF = 18000;
+		  		}
+		  		else {
+		  			selfMPF = selfIncome * 0.05;
+		  		}
+		  		if (spouseIncome <= 85200){
+					var spouseMPF = 0;
+				}
+				else if (spouseIncome >= 360000){
+					var spouseMPF = 18000;
+				}
+				else {
+					spouseMPF = spouseIncome * 0.05;
+		  		}
+		  		var maritalStatus = getParameterByName('marital_status');
+
+		  		if (maritalStatus === 'Single' || spouseIncome == 0) {
+		  			var table = document.createElement('table');
+		  			table.setAttribute('class', 'table');
+		  			table.setAttribute('style', 'width:100%');
+		  			table.setAttribute('cellspacing', '0');
+
+					<!--1st row-->
+					var tr = document.createElement('tr');
+
+					var th1 = document.createElement('th');
+					var th2 = document.createElement('th');
+
+					var text1 = document.createTextNode('HK$');
+
+					th2.appendChild(text1);
+					tr.appendChild(th1);
+					tr.appendChild(th2);
+
+					table.appendChild(tr);
+
+					<!--2nd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+
+					var text1 = document.createTextNode('Total income');
+					var text2 = document.createTextNode(selfIncome);
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					<!--2.5nd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+
+					var text1 = document.createTextNode('Deductions');
+					var text2 = document.createTextNode(selfMPF);
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					<!--3rd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+
+					var text1 = document.createTextNode('Total allowances');
+					if (maritalStatus === 'Single')
+						var text2 = document.createTextNode('132000');
+					else
+						var text2 = document.createTextNode('264000');
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					<!--3.5rd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+
+					var text1 = document.createTextNode('Net chargeable income');
+					if (maritalStatus === 'Single'){
+						if (selfIncome - 132000 - selfMPF >= 0)
+							var text2 = document.createTextNode(selfIncome - 132000 - selfMPF);
+						else
+							var text2 = document.createTextNode(0);
+					}
+					else{
+						if (selfIncome -264000 - selfMPF >=0)
+							var text2 = document.createTextNode(selfIncome - 264000);
+						else
+							var text2 = document.createTextNode(0);
+					}
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					<!--4th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					td1.setAttribute('id', 'row4Text');
+					td2.setAttribute('id', 'beforeTax');
+
+					var text1 = document.createTextNode('Tax payable by you (before tax reduction)');
+
+					td1.appendChild(text1);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					<!--5th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					td2.setAttribute('id', 'taxReduction');
+
+					var text1 = document.createTextNode('Tax reduction');
+
+					td1.appendChild(text1);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					<!--6th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					td1.setAttribute('id', 'red');
+					td2.setAttribute('id', 'afterTax');
+
+					var text1 = document.createTextNode('Tax payable by you (after tax reduction)');
+
+					td1.appendChild(text1);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+
+					table.appendChild(tr);
+
+					document.body.appendChild(table);
+
+					if (maritalStatus === 'Single'){
+						document.getElementById("beforeTax").innerHTML = compute(selfIncome, 132000, selfMPF);
+						document.getElementById("taxReduction").innerHTML = taxReduction(parseInt(compute(selfIncome, 132000, selfMPF)));
+						document.getElementById("afterTax").innerHTML = parseInt(compute(selfIncome, 132000, selfMPF)) - taxReduction(parseInt(compute(selfIncome, 132000, selfMPF)));
+		  			}
+		  			else {
+		  				document.getElementById("beforeTax").innerHTML = compute(selfIncome, 264000, selfMPF);
+						document.getElementById("taxReduction").innerHTML = taxReduction(parseInt(compute(selfIncome, 264000, selfMPF)));
+						document.getElementById("afterTax").innerHTML = parseInt(compute(selfIncome, 264000, selfMPF)) - taxReduction(parseInt(compute(selfIncome, 264000, selfMPF)));
+		  			}
+		  			if(isNaN(compute(selfIncome, 132000, selfMPF))){
+		  				document.getElementById("row4Text").innerHTML = 'Tax payable by you (before tax reduction) (* At standard rate)';
+		  			}
+		  		}
+		  		else {
+		  			var table = document.createElement('table');
+					table.setAttribute('class', 'table');
+					table.setAttribute('style', 'width:100%');
+					table.setAttribute('cellspacing', '0');
+
+					<!--row -1-->
+					var tr = document.createElement('tr');
+
+					var th1 = document.createElement('th');
+					var th2 = document.createElement('th');
+					var th3 = document.createElement('th');
+					th2.setAttribute('colspan', '2');
+
+					var text1 = document.createTextNode('Under Separate Taxation');
+					var text2 = document.createTextNode('Under Joint Assessment');
+
+					th2.appendChild(text1);
+					th3.appendChild(text2);
+
+					tr.appendChild(th1);
+					tr.appendChild(th2);
+					tr.appendChild(th3);
+
+					table.appendChild(tr);
+
+					<!--row 0-->
+					var tr = document.createElement('tr');
+
+					var th1 = document.createElement('th');
+					var th2 = document.createElement('th');
+					var th3 = document.createElement('th');
+					var th4 = document.createElement('th');
+
+					var text1 = document.createTextNode('Self');
+					var text2 = document.createTextNode('Spouse');
+
+					th2.appendChild(text1);
+					th3.appendChild(text2);
+					tr.appendChild(th1);
+					tr.appendChild(th2);
+					tr.appendChild(th3);
+					tr.appendChild(th4);
+
+					table.appendChild(tr);
+
+					<!--1st row-->
+					var tr = document.createElement('tr');
+
+					var th1 = document.createElement('th');
+					var th2 = document.createElement('th');
+					var th3 = document.createElement('th');
+					var th4 = document.createElement('th');
+
+					var text1 = document.createTextNode('HK$');
+					var text2 = document.createTextNode('HK$');
+					var text3 = document.createTextNode('HK$');
+
+					th2.appendChild(text1);
+					th3.appendChild(text2);
+					th4.appendChild(text3);
+					tr.appendChild(th1);
+					tr.appendChild(th2);
+					tr.appendChild(th3);
+					tr.appendChild(th4);
+
+					table.appendChild(tr);
+
+					<!--2nd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Total income');
+					var text2 = document.createTextNode(selfIncome);
+					var text3 = document.createTextNode(spouseIncome);
+					var text4 = document.createTextNode(parseInt(selfIncome) + parseInt(spouseIncome));
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					td3.appendChild(text3);
+					td4.appendChild(text4);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--2nd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Deductions');
+					var text2 = document.createTextNode(selfMPF);
+					var text3 = document.createTextNode(spouseMPF);
+					var text4 = document.createTextNode(parseInt(selfMPF) + parseInt(spouseMPF));
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					td3.appendChild(text3);
+					td4.appendChild(text4);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--3rd row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Total allowances');
+					var text2 = document.createTextNode('132000');
+					var text3 = document.createTextNode('132000');
+					var text4 = document.createTextNode('264000');
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					td3.appendChild(text3);
+					td4.appendChild(text4);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--4th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Net chargeable income');
+					if (selfIncome < (132000 + selfMPF))
+						var text2 = document.createTextNode('0');
+					else
+						var text2 = document.createTextNode(selfIncome - 132000 - selfMPF);
+					if (spouseIncome < (132000 + spouseMPF))
+						var text3 = document.createTextNode('0');
+					else
+						var text3 = document.createTextNode(spouseIncome - 132000 - spouseMPF);
+					if (parseInt(selfIncome) + parseInt(spouseIncome) < (264000 + parseInt(selfMPF) + parseInt(spouseMPF)))
+						var text4 = document.createTextNode('0');
+					else
+						var text4 = document.createTextNode(parseInt(selfIncome) + parseInt(spouseIncome) - 264000 - parseInt(selfMPF) - parseInt(spouseMPF));
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					td3.appendChild(text3);
+					td4.appendChild(text4);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--5th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					td1.setAttribute('id', 'row5Text');
+
+					var text1 = document.createTextNode('Tax payable (before tax reduction)');
+					var text2 = document.createTextNode(compute(selfIncome, 132000, selfMPF));
+					var text3 = document.createTextNode(compute(spouseIncome, 132000, spouseMPF));
+
+					var text4 = document.createTextNode(compute(parseInt(selfIncome) + parseInt(spouseIncome), 264000, parseInt(selfMPF) + parseInt(spouseMPF)));
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					td3.appendChild(text3);
+					td4.appendChild(text4);
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--5.5th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+
+					td2.setAttribute('colspan', '2');
+					td2.setAttribute('align', 'center');
+
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Total tax payable by you and your spouse (before tax reduction)');
+					var text2 = document.createTextNode(parseInt(compute(selfIncome, 132000, selfMPF)) + parseInt(compute(spouseIncome, 132000, spouseMPF)));
+					var text4 = document.createTextNode(parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF))));
+
+
+					td1.appendChild(text1);
+					td2.appendChild(text2);
+					td4.appendChild(text4);
+
+					if (parseInt(compute(selfIncome, 132000, selfMPF)) + parseInt(compute(spouseIncome, 132000, spouseMPF)) <= parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))){
+
+						td2.setAttribute('id', 'red');
+					}
+					else{
+						td4.setAttribute('id', 'red');
+
+					}
+
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--6th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Tax reduction');
+					if (parseInt(compute(selfIncome, 132000, selfMPF)) + parseInt(compute(spouseIncome, 132000, spouseMPF)) <= parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))){
+						var text2 = document.createTextNode(taxReduction(parseInt(compute(selfIncome, 132000, selfMPF))));
+						var text3 = document.createTextNode(taxReduction(parseInt(compute(spouseIncome, 132000, spouseMPF))))
+					}
+					else
+						var text2 = document.createTextNode(taxReduction(parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))));
+
+					td1.appendChild(text1);
+					if (parseInt(compute(selfIncome, 132000, selfMPF)) + parseInt(compute(spouseIncome, 132000, spouseMPF)) <= parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))){
+						td2.appendChild(text2);
+						td3.appendChild(text3);
+						td2.setAttribute('id', 'red');
+						td3.setAttribute('id', 'red');
+					}
+					else{
+						td4.appendChild(text2);
+						td4.setAttribute('id', 'red');
+					}
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					<!--7th row-->
+					var tr = document.createElement('tr');
+
+					var td1 = document.createElement('td');
+					var td2 = document.createElement('td');
+					var td3 = document.createElement('td');
+					var td4 = document.createElement('td');
+
+					var text1 = document.createTextNode('Total tax payable by you and your spouse (after tax reduction)');
+
+					if (parseInt(compute(selfIncome, 132000, selfMPF)) + parseInt(compute(spouseIncome, 132000, spouseMPF)) <= parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))){
+						var text2 = document.createTextNode(parseInt(compute(selfIncome, 132000, selfMPF)) - taxReduction(parseInt(compute(selfIncome, 132000, selfMPF))));
+						var text3 = document.createTextNode(parseInt(compute(spouseIncome, 132000, spouseMPF)) - taxReduction(parseInt(compute(spouseIncome, 132000, spouseMPF))));
+					}
+					else
+						var text2 = document.createTextNode(taxReduction(parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))));
+
+					td1.appendChild(text1);
+					if (parseInt(compute(selfIncome, 132000, selfMPF)) + parseInt(compute(spouseIncome, 132000, spouseMPF)) <= parseInt(compute(parseInt(selfIncome) + parseInt(spouseIncome), 132000 * 2, parseInt(selfMPF) + parseInt(spouseMPF)))){
+						td2.appendChild(text2);
+						td3.appendChild(text3);
+						td2.setAttribute('id', 'red');
+						td3.setAttribute('id', 'red');
+					}
+					else{
+						td4.appendChild(text2);
+						td4.setAttribute('id', 'red');
+					}
+
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+
+					table.appendChild(tr);
+
+					document.body.appendChild(table);
+
+					if(isNaN(compute(selfIncome, 132000, selfMPF)) || isNaN(compute(spouseIncome, 132000, spouseMPF)) || isNaN(compute(parseInt(selfIncome) + parseInt(spouseIncome), 264000, parseInt(selfMPF) + parseInt(sposeMPF)))){
+						document.getElementById("row5Text").innerHTML = 'Tax payable by you (before tax reduction) (* At standard rate)';
+		  			}
+		  		}
+			</script>
+</div>

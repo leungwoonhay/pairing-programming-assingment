@@ -1,0 +1,18 @@
+#red, #beforeTax, #taxReduction, #afterTax{
+  color: red;
+}
+
+td{
+  padding: 5px;
+  outline: 1px solid #000;
+  outline-offset: -4px;
+}
+
+
+
+
+
+
+
+
+

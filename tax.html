@@ -1,0 +1,83 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Salaries Tax Computation</title>
+  <link rel="stylesheet" href="tax.css" />
+</head>
+
+<div class="main">
+  <form name="form" class="tax" method="GET" action="result.html" onsubmit="return validateForm()">
+  	<h3 align="center">Salaries Tax Computation</h3>
+  	<div align="center">
+  		Marital status
+  		<input type="radio" id="marital_status" name="marital_status" value="Single" checked onclick="single()"> Single / Separated / Divorced / Widowed
+		<input type="radio" id="marital_status" name="marital_status" value="Married" onclick="married()"> Married<br>
+		<script>
+			function single() {
+				document.getElementById("spouse_income").disabled = true;
+				document.getElementById("spouse_income").value = "0";
+			}
+			function married() {
+				document.getElementById("spouse_income").disabled = false;
+			}
+			function validateForm() {
+				var selfIncome = document.forms["form"]["self_income"].value;
+				var spouseIncome = document.forms["form"]["spouse_income"].value;
+				if (selfIncome == "") {
+				  document.forms["form"]["self_income"].value = 0;
+
+				}
+				if (spouseIncome == ""){
+				  document.forms["form"]["spouse_income"].value = 0;
+
+				}
+				if (selfIncome < 0 || spouseIncome < 0){
+				  alert("Your input value is invalid!");
+				  return false;
+				}
+			}
+		</script>
+	</div>
+    <table class="table" style="width:100%">
+	  <tr>
+	    <th></th>
+	    <th>Self HK$<br>(Exclude cents)</th>
+	    <th>Spouse HK$<br>(Exclude cents)</th>
+	  </tr>
+	  <tr>
+	    <td>Income for the year of assessment</td>
+	    <th><input type="number" id="self_income" name="self_income" value="0"></td>
+	    <th><input type="number" id="spouse_income" name="spouse_income" value="0" ></td>
+	  </tr>
+
+	</table>
+	<div class="button">
+		<button class="reset" type="button" onclick="resetValue()">Reset</button>
+		<button class="compute" type="submit">Compute</button>
+		<script>
+			function resetValue() {
+				document.getElementById("self_income").value = "0";
+				document.getElementById("spouse_income").value = "0";a
+			}
+
+		</script>
+	</div>
+  </form>
+
+  <script>
+  	function start() {
+  		var maritalStatus = document.forms["form"]["marital_status"].value;
+  		if (maritalStatus == "Single"){
+			document.getElementById("spouse_income").disabled = true;
+			document.getElementById("spouse_income").value = "0";
+		}
+		else{
+			document.getElementById("spouse_income").disabled = false;
+		}
+  	}
+  </script>
+
+  <script type="text/javascript">
+         start();
+   </script>
+</div>
+
